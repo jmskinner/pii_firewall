@@ -1,4 +1,4 @@
-# PII Firewall (Alpha)
+# PII Firewall (alpha)
 
 The PII Firewall is a standalone program built as proof of concept for The Data Station Project, it is designed to run in a local context and it’s primary objectives are as follows:
 

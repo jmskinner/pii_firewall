@@ -57,4 +57,12 @@ The PII Firewall will automatically parse subdirectories of the input source and
 
 ##  Simplified Architecture
 
-![alt text](https://github.com/jmskinner/pii_firewall/blob/main/read_me_images/Blank%20diagram%20(2).png)
+![](https://github.com/jmskinner/pii_firewall/blob/main/read_me_images/high_level.png)
+
+## Strategy UML for Work and Write
+![](https://github.com/jmskinner/pii_firewall/blob/main/read_me_images/strategy_uml.png)
+
+
+## Parallel Processing Flow
+![](https://github.com/jmskinner/pii_firewall/blob/main/read_me_images/par_processing_flow.png)
+

@@ -57,4 +57,4 @@ The PII Firewall will automatically parse subdirectories of the input source and
 
 ##  Simplified Architecture
 
-![alt text](https://github.com/jmskinner/pii_firewall/blob/read_me_images/image.jpg?raw=true)
+![alt text](https://github.com/jmskinner/pii_firewall/blob/main/read_me_images/Blank%20diagram%20(2).png)

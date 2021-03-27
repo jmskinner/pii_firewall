@@ -23,12 +23,6 @@ The PII Firewall is a standalone program built as proof of concept for The Data 
 
 - **requirements.txt** - A pip freeze that contains all of the necessary packages to run the PII Firewall, useful if running within a virtual environment
 
-## Table of Contents
-
-- [Installation and Execution](Initial-Setup-and-Execution)
-- [Installation and Execution](Initial-Setup-and-Execution)
-
-
 ## Initial Setup and Execution
 
 ### *Installation Requirements*

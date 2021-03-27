@@ -10,20 +10,19 @@ from pathlib import Path
 class PIIAnalyzer:
 
     def __init__(self, config):
-        self.config = config
+        self.runtime_config = config['runtime_config']
+        self.task_config = config['task_config']
         self.task_queue = Queue()
         self.write_queue = Queue()
         self.worker_signals = Queue()
         self.writer_signals = Queue()
-        self.max_num_workers = config['max_cpus']
-        self.max_num_writers = config['max_threads']
-
-        # self.task_factory = task_factory
+        self.max_num_workers = self.runtime_config['max_cpus']
+        self.max_num_writers = self.runtime_config['max_threads']
 
     def run(self):
 
         reader_threads = []
-        for endpoint in self.config['endpoints']:
+        for endpoint in self.runtime_config['endpoints']:
             input_src, output_dest = endpoint.split("-->")
             input_src = input_src.strip()
             output_dest = output_dest.strip()
@@ -92,8 +91,8 @@ class PIIAnalyzer:
 
         for in_endpoint in all_files:
             domain, file_type = self.__get_mime_type(in_endpoint)
-            out_endpoint = self.__make_output_dest(domain, file_type, in_endpoint, dest)
-            task = Task(domain, file_type, in_endpoint, out_endpoint)
+            out_endpoint, profile_endpoint = self.__make_output_dest(domain, file_type, in_endpoint, dest)
+            task = Task(domain, file_type, in_endpoint, out_endpoint,profile_endpoint,self.task_config)
             self.task_queue.put(task)
             print(f"Task at {task.in_endpoint} was placed on queue")
 
@@ -102,8 +101,11 @@ class PIIAnalyzer:
         left_index = file_name.rfind("/")
         right_index = file_name.rfind(".")
         ext = file_name[right_index:]
-        title = file_name[left_index+1:right_index] + "_pii_" + ext
-        dir_path = os.path.join(dest,domain,file_type)
+        title = file_name[left_index+1:right_index]
+        dir_path = os.path.join(dest,"data",domain,file_type)
+        pro_path = os.path.join(dest,"profiles",domain,file_type)
         Path(dir_path).mkdir(parents=True, exist_ok=True)
-        out_path = os.path.join(dir_path, title)
-        return out_path
+        Path(pro_path).mkdir(parents=True, exist_ok=True)
+        out_path = os.path.join(dir_path,title+"_post_pii_" + ext)
+        profile_path = os.path.join(pro_path,title+".json")
+        return out_path,profile_path

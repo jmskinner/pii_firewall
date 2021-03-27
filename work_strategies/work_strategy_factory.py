@@ -16,7 +16,6 @@ class WorkerStrategyFactory:
                 print ("Can't parse JSON files just yet")
                 raise ValueError(f" failed to process task with file path {task.in_endpoint}")
             elif task_type == 'pdf':
-                print('Made a pdf task and added to queque')
                 return pdf.WorkerPDFStrategy(domain, task_type)
 
         elif domain == "image":

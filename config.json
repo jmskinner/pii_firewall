@@ -1,10 +1,31 @@
-{
-        "endpoints": ["/Users/skinner/Desktop/mpcs/practicum/pii_analyzer/testing/csv_tests --> /Users/skinner/Desktop/mpcs/practicum/output"],
+{ "runtime_config": {
+        "endpoints": [
+                "/Users/skinner/Desktop/mpcs/practicum/pii_firewall/testing/txt_tests --> /Users/skinner/Desktop/mpcs/practicum/output"
+        ],
         "max_threads": 5,
-        "max_cpus": 2,
-        "remove_orginals": false,
-        "pdf_redact_faces": true,
-        "images_redact_text": false
-
+        "max_cpus": 2
+},
+        "task_config" : {
+                "max_thread_per_task" : 5 ,
+                "target_entities": [
+                        "US_SSN",
+                        "US_PASSPORT",
+                        "US_ITIN",
+                        "US_BANK_NUMBER",
+                        "US_DRIVER_LICENSE",
+                        "PHONE_NUMBER",
+                        "CREDIT_CARD",
+                        "CRYPTO",
+                        "DOMAIN_NAME",
+                        "EMAIL_ADDRESS",
+                        "IBAN_CODE",
+                        "IP_ADDRESS",
+                        "NRP",
+                        "LOCATION",
+                        "PERSON"
+                ],
+                "pdf_redact_faces": true,
+                "images_redact_text": false
+        }
 
 }

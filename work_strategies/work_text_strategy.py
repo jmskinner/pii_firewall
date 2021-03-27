@@ -11,7 +11,7 @@ class WorkerTextStrategy(WorkerBaseStrategy):
         self.analyzer = AnalyzerEngine()
         self.anonymizer = AnonymizerEngine()
         self.text_generator = None
-        self.thread_semaphore = Semaphore(5)
+        self.thread_semaphore = Semaphore(2)
         self.my_lock = Lock()
 
 
@@ -21,6 +21,7 @@ class WorkerTextStrategy(WorkerBaseStrategy):
 
     def _process(self, task):
         redacted_lines = {}
+        results = []
         txt_lines_ordered = []
         local_threads = []
 
@@ -28,7 +29,7 @@ class WorkerTextStrategy(WorkerBaseStrategy):
             with open(task.in_endpoint) as fh:
                 for pos, chunk in enumerate(self._read_in_chunks(fh)):
                         self.thread_semaphore.acquire()
-                        thread = Thread(target=self._redact_a_chunk, args=(chunk,pos,redacted_lines,task.in_endpoint))
+                        thread = Thread(target=self._redact_a_chunk, args=(chunk,pos,redacted_lines,task.in_endpoint,results))
                         local_threads.append(thread)
                         thread.start()
 
@@ -36,7 +37,7 @@ class WorkerTextStrategy(WorkerBaseStrategy):
             fh = urlopen(task.in_endpoint)
             for pos, chunk in enumerate(self._read_in_chunks(fh)):
                 self.thread_semaphore.acquire()
-                thread = Thread(target=self._redact_a_chunk, args=(chunk,pos,redacted_lines,task.in_endpoint))
+                thread = Thread(target=self._redact_a_chunk, args=(chunk,pos,redacted_lines,task.in_endpoint,results))
                 local_threads.append(thread)
                 thread.start()
 
@@ -49,6 +50,7 @@ class WorkerTextStrategy(WorkerBaseStrategy):
             txt_lines_ordered.append(page)
 
         task.data = txt_lines_ordered
+        task.profile['txt_NER'] = results
         return task
 
 
@@ -56,11 +58,12 @@ class WorkerTextStrategy(WorkerBaseStrategy):
         print(f"Worker {worker.id} pushed task at {task.in_endpoint}")
         worker.write_queue.put(task)
 
-    def _redact_a_chunk(self,chunk,key,output,in_endpoint):
+    def _redact_a_chunk(self,chunk,key,output,in_endpoint,results_list):
         self.my_lock.acquire()
         try:
             new_chunk = ''.join(str(e) for e in chunk)
             results = self.analyzer.analyze(text=new_chunk, language='en')
+            results_list.extend(results)
             output[key] = self.anonymizer.anonymize(text=new_chunk,analyzer_results=results)
         except Exception:
             print(f"Incompatible text type occured on chunk {key+1} in the doc located at {in_endpoint}... ignoring this page")

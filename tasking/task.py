@@ -1,23 +1,34 @@
-
-from pdf2image import convert_from_path
-from urllib.request import urlopen
-import pandas as pd
-from PIL import Image
+from datetime import datetime
 
 class Task():
 
-    def __init__(self,domain,task_type,in_endpoint,out_endpoint):
+    def __init__(self,domain,task_type,in_endpoint,out_endpoint,profile_endpoint,task_config):
         self.task_type = task_type
         self.data = None
+        self.config = task_config
+        self.profile = {}
         self.in_endpoint = in_endpoint
         self.out_endpoint = out_endpoint
+        self.profile_endpoint = profile_endpoint
         self.domain = domain
         self.in_is_local =  not any(x in in_endpoint for x in ['https','http'])
         self.out_is_local = not any(x in out_endpoint for x in ['https','http'])
+        self.start_time = datetime.now()
+        self._make_baseline_profile()
+
+
 
 
     def has_data(self):
         return self.data != None
+
+    def _make_baseline_profile(self):
+        self.profile['in_endpoint'] = self.in_endpoint
+        self.profile['out_endpoint'] = self.out_endpoint
+        self.profile['profile_endpoint'] = self.profile_endpoint
+        self.profile['domain'] = self.domain
+        self.profile['task_type'] = self.task_type
+
 
 
 #

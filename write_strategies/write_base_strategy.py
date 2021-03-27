@@ -8,8 +8,17 @@ class WriterBaseStrategy(ABC):
         self.domain = domain
         self.task_type = task_type
 
-    @abstractmethod
+
     def execute(self,writer,task):
+        self._write_data(task)
+        self._write_profile(task)
+
+    @abstractmethod
+    def _write_data(self,task):
+        pass
+
+    @abstractmethod
+    def _write_profile(self,task):
         pass
 
 
@@ -18,5 +27,8 @@ class WriterNullStrategy(WriterBaseStrategy):
     def __init__(self):
         super().__init__(None,None)
 
-    def execute(self,writer,task):
+    def _write_data(self,task):
+        print("I am a null type, you cannot execute me!")
+
+    def _write_profile(self,task):
         print("I am a null type, you cannot execute me!")

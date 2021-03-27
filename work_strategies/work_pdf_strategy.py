@@ -3,10 +3,12 @@ from work_strategies.work_base_strategy import WorkerBaseStrategy
 from pdf2image import convert_from_path, convert_from_bytes
 from presidio_image_redactor import ImageRedactorEngine
 from threading import Lock,Thread, Semaphore
+from PIL import Image, ImageChops
+from presidio_image_redactor.image_analyzer_engine import ImageAnalyzerEngine
 
 class WorkerPDFStrategy(WorkerBaseStrategy):
 
-    engine = ImageRedactorEngine()
+
     hyperthread_image_processing = True
     ## if we wanted to limit this across classes we could change this to active and remove it from the constructor
     # thread_semaphore = Semaphore(5)
@@ -14,8 +16,10 @@ class WorkerPDFStrategy(WorkerBaseStrategy):
     def __init__(self,domain, task_type):
         super().__init__(domain, task_type)
         self.my_lock = Lock()
-        self.engine = ImageRedactorEngine()
-        self.thread_semaphore = Semaphore(5)
+        self.image_analyzer = ImageAnalyzerEngine()
+        self.text_redactor = ImageRedactorEngine()
+        self.thread_semaphore = None
+
 
     def _fetch(self, task):
         try:
@@ -34,14 +38,16 @@ class WorkerPDFStrategy(WorkerBaseStrategy):
         redacted_images = {}
         local_threads = []
         pdf_img_list = []
-
+        # self.thread_semaphore = Semaphore(task.config['max_thread_per_task']+1)
+        # print(task.config['max_thread_per_task'])
         # In case we have a large doc, don't spin up too many threads
         for pos,image in enumerate(task.data):
-            self.thread_semaphore.acquire()
-            thread = Thread(target=self._redact_an_image, args=(image,pos,redacted_images,task.in_endpoint))
+            # self.thread_semaphore.acquire()
+            thread = Thread(target=self._redact_an_image, args=(image,pos,redacted_images,task))
             local_threads.append(thread)
-            thread.start()
 
+        for thread in local_threads:
+            thread.start()
         # wait for the threads to finish
         for thread in local_threads:
             thread.join()
@@ -49,6 +55,7 @@ class WorkerPDFStrategy(WorkerBaseStrategy):
         # reassemble the doc in proper order
         for num, page in sorted(redacted_images.items()):
             pdf_img_list.append(page)
+
 
         task.data = pdf_img_list
         return task
@@ -58,12 +65,20 @@ class WorkerPDFStrategy(WorkerBaseStrategy):
         worker.write_queue.put(task)
 
 
-    def _redact_an_image(self,img,key,output,in_endpoint):
+    def _redact_an_image(self,img,key,output,task):
         self.my_lock.acquire()
         try:
-            output[key] = (self.engine.redact(img, self.REDACT_COLOR))
+            temp = ImageChops.duplicate(img)
+            image_result = self.image_analyzer.analyze(temp)
+            if len(image_result) > 0:
+                task.profile["page"+str(key)] = str(image_result)
+            output[key] = self.text_redactor.redact(img, self.REDACT_COLOR)
         except Exception:
-            print(f"Incompatible PDF type occured on page {key+1} in the doc located at {in_endpoint}... ignoring this page")
+            print(f"Incompatible PDF type occured on page {key+1} in the doc located at {task.in_endpoint}... ignoring this page")
+            self.my_lock.release()
+            # self.thread_semaphore.release()
         finally:
             self.my_lock.release()
-            self.thread_semaphore.release()
+            # self.thread_semaphore.release()
+
+

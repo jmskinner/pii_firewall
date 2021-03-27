@@ -8,6 +8,7 @@ class WorkerBaseStrategy(ABC):
         self.domain = domain
         self.task_type = task_type
 
+
     def execute(self,worker,task):
         try:
             task = self._fetch(task)

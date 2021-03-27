@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 from pathlib import Path
 from IPython.display import clear_output
-from pii_analyzer import PIIAnalyzer
+from pii_firewall import PIIFirewall
 import os
 
 def parse_args():
@@ -59,7 +59,7 @@ def run_benchmark():
                     print('\n' * 1)
                     print(bordered(counter.upper()))
                     print('\n' * 1)
-                    analyzer = PIIAnalyzer(config)
+                    analyzer = PIIFirewall(config)
                     start = datetime.now()
                     analyzer.run()
                     end = datetime.now()
@@ -85,6 +85,6 @@ if __name__ == '__main__':
     results_path = '/Users/skinner/Desktop/mpcs/practicum/pii_firewall/testing/output'
     print("Running the program now")
     config = parse_args_test()
-    analyzer = PIIAnalyzer(config)
+    analyzer = PIIFirewall(config)
     analyzer.run()
     # run_benchmark()

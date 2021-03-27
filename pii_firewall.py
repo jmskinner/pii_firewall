@@ -7,7 +7,7 @@ from multiprocessing import Queue
 from tasking.task import Task
 from pathlib import Path
 
-class PIIAnalyzer:
+class PIIFirewall:
 
     def __init__(self, config):
         self.runtime_config = config['runtime_config']

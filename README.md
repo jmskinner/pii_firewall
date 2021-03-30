@@ -2,7 +2,7 @@
 
 The PII Firewall is a standalone program built as proof of concept for The Data Station Project, it is designed to run in a local context and it’s primary objectives are as follows:
 
-1. Provide flexible and extensible tool to identify PII in any given data source
+1. Provide flexible and extensible tools to identify PII in any given data source
 
 2.  Prevent the in inadvertent transmission of PII to federated data systems
 

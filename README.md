@@ -26,7 +26,7 @@ The PII Firewall is a standalone program built as proof of concept for The Data 
 ## Initial Setup and Execution
 
 #### *Installation Requirements*
-As always, it is highly recommended that you run your the PII Firewall in a self-contained virtual environment. To setup up your own virtual environment I recommend you check out [this link](https://docs.python.org/3/tutorial/venv.html) for more details. Once you *have activated the venv*, execute the following instructions in your command line.
+As always, it is highly recommended that you run your PII Firewall in a self-contained virtual environment. To setup up your own virtual environment I recommend you check out [this link](https://docs.python.org/3/tutorial/venv.html) for more details. Once you *have activated the venv*, execute the following instructions in your command line.
 
 ```python -m pip install -r requirements.txt```
 
@@ -34,7 +34,7 @@ One should also note that  due to issues with thread-safe data types in python, 
 
 #### *Execution*
 
-Once a configuration is structured and complete, execution is a simple as parsing said config.json in python (preferably using the json library) and passing said json object (python dictionary) to the constructor of a PII_Firewall object. Note that using a JSON config file is actually necessary since a user could theoretically construct a nested python dictionary with all of the appropriate values. This is a feature and not as bug as it allows for a scheduler process to generate multiple instances of the PII Firewall on separate nodes or machines and customize their configurations.
+Once a configuration is structured and complete, execution is a simple as parsing said config.json in python (preferably using the json library) and passing said json object (python dictionary) to the constructor of a PII_Firewall object. Note that using a JSON config file is actually necessary since a user could theoretically construct a nested python dictionary with all of the appropriate values. This is a feature and not a bug as it allows for a scheduler process to generate multiple instances of the PII Firewall on separate nodes or machines and customize their configurations.
 
 **Once a PIIFirewall object has been instantiated with the proper runtime configuration, simply call the *run()* method and execution will begin.**
 
